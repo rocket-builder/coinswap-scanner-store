@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "signalr.url",
+      "type": "java.lang.String",
+      "description": "Description for signalr.url."
+    }
+  ]
+}
