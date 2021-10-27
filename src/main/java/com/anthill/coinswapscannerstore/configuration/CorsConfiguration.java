@@ -16,8 +16,8 @@ public class CorsConfiguration implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "https://coinswap-scanner-mvc.herokuapp.com",
-                        "http://127.0.0.1:8081",
-                        "http://127.0.0.1:8080")
+                        "http://localhost:8080",
+                        "http://localhost:8081")
                 .allowCredentials(true)
                 .allowedMethods("POST", "GET", "PUT", "DELETE")
                 .allowedHeaders("*");
