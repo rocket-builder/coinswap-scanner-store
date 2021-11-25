@@ -2,6 +2,7 @@ package com.anthill.coinswapscannerstore.controllers;
 
 import com.anthill.coinswapscannerstore.beans.Fork;
 import com.anthill.coinswapscannerstore.services.ForkService;
+import com.anthill.coinswapscannerstore.services.ForkWebsocketService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,9 +15,10 @@ public class ForkController {
 
     private final ForkService forkService;
 
-    public ForkController(ForkService forkService) {
+    public ForkController(ForkWebsocketService forkWebsocketService, ForkService forkService) {
         this.forkService = forkService;
-        this.forkService.init();
+
+        forkWebsocketService.init();
     }
 
     @GetMapping()
