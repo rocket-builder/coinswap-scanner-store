@@ -208,4 +208,10 @@ public class RedisService implements IRedisService {
     public void flushAll() {
         redisServerCommands.flushAll();
     }
+
+    public void resetExpiration(String forkKey, long forkTtl){
+        if(getExpire(forkKey) <= 0){
+            expire(forkKey, forkTtl);
+        }
+    }
 }
