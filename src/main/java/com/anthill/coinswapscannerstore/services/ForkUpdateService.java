@@ -5,9 +5,12 @@ import com.anthill.coinswapscannerstore.beans.Token;
 import com.anthill.coinswapscannerstore.constants.Global;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ForkUpdateService {
@@ -31,7 +34,9 @@ public class ForkUpdateService {
 
         var forkHashKey = new ArrayList<String>();
         if(hashes != null){
-            forkHashKey = (ArrayList<String>) hashes;
+            forkHashKey = (ArrayList<String>) Arrays.stream((Object[]) hashes)
+                    .map(Object::toString)
+                    .collect(Collectors.toList());
         }
 
         return forkHashKey;
