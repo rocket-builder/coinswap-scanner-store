@@ -10,6 +10,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SpringBootTest
 class CoinswapScannerStoreApplicationTests {
@@ -93,5 +96,16 @@ class CoinswapScannerStoreApplicationTests {
 		var isExist = redis.hHasKey(key, hashKey);
 
 		assert isExist;
+	}
+
+	@Test
+	void countAllRealForks(){
+		var forkCount = redis.hGetAll("ForkUpdate").values()
+				.stream()
+				.map(a -> (Object[])a)
+				.flatMap(Stream::of)
+				.count();
+
+		assert forkCount > 0;
 	}
 }
