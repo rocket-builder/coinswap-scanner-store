@@ -20,7 +20,8 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint(
                 "/new", "/update")
-                .setAllowedOrigins("*")
+                .setAllowedOrigins("http://localhost:8081",
+                        "https://coinswap-scanner-mvc.herokuapp.com")
                 .withSockJS();
     }
 }
