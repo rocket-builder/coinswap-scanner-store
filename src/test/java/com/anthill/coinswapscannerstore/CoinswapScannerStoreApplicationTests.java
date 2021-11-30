@@ -32,6 +32,7 @@ class CoinswapScannerStoreApplicationTests {
 		var quote = new Quote(new UsdPrice(BigDecimal.ONE, BigDecimal.ONE, new Date()));
 		var forks = Collections.singletonList(
 				new Fork(
+						"122",
 						new Token(1, "Some token", "some-token", "STK",
 								new Platform(1, 1, "Binance"),
 								quote),
@@ -56,6 +57,7 @@ class CoinswapScannerStoreApplicationTests {
 	void getHashFromForkShouldBeEqual(){
 		var quote1 = new Quote(new UsdPrice(BigDecimal.ONE, BigDecimal.ONE, new Date()));
 		var fork1 = new Fork(
+				"122",
 				new Token(1, "Some token", "some-token", "STK",
 						new Platform(1, 1, "Pancake"),
 						quote1),
@@ -70,6 +72,7 @@ class CoinswapScannerStoreApplicationTests {
 
 		var quote2 = new Quote(new UsdPrice(BigDecimal.TEN, BigDecimal.TEN, new Date()));
 		var fork2 = new Fork(
+				"122",
 				new Token(2, "Some token22", "some-token11", "STKDD",
 						new Platform(11, 12, "Pancake"),
 						quote2),

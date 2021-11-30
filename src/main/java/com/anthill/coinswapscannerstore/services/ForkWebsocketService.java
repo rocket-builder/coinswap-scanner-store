@@ -46,30 +46,26 @@ public class ForkWebsocketService {
                 var existsForksHashes = forkUpdateService.getTokenForksHashKeys(token);
 
                 if(existsForksHashes.size() > 0){
-                    var newForks = new ArrayList<Fork>();
-                    var forkUpdates = new ArrayList<Fork>();
-                    forksList.forEach(fork -> {
-                        if(existsForksHashes.contains(fork.hashCodeString())) {
-                            forkUpdates.add(fork);
-                        } else {
-                            newForks.add(fork);
-                        }
-                    });
+                    var forkUpdates = forksList.stream()
+                            .filter(fork -> existsForksHashes.contains(fork.hashCodeString()))
+                            .collect(Collectors.toList());
 
                     forkUpdates.forEach(
                             f -> log.info("Update fork: " + f));
 
-                    newForks.addAll(forkUpdates);
-                    forkUpdateService.saveForkHashes(token, newForks);
-                    forkService.save(newForks);
-
-                    simpMessagingTemplate.convertAndSend("/forks/update/", forksList);
+                    var hashed = forkUpdates.stream()
+                            .peek(fork -> fork.setId(fork.hashCodeString()))
+                            .collect(Collectors.toList());
+                    simpMessagingTemplate.convertAndSend("/forks/update/", hashed);
                 } else {
-                    forkUpdateService.saveForkHashes(token, forksList);
-                    forkService.save(forksList);
-
-                    simpMessagingTemplate.convertAndSend("/forks/new/", forksList);
+                    var hashed = forksList.stream()
+                            .peek(fork -> fork.setId(fork.hashCodeString()))
+                            .collect(Collectors.toList());
+                    simpMessagingTemplate.convertAndSend("/forks/new/", hashed);
                 }
+
+                forkUpdateService.saveForkHashes(token, forksList);
+                forkService.save(forksList);
             }
         }, ForkList.class);
 
