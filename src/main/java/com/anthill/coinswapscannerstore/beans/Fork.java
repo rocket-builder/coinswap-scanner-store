@@ -17,6 +17,7 @@ import java.util.Objects;
 @Getter @Setter
 public class Fork implements Serializable {
 
+    private String id;
     private Token token;
     private Pair firstPair, secondPair;
 

@@ -35,41 +35,35 @@ public class ForkWebsocketService {
     }
 
     public void init(){
-        hubConnection.on("Send", (forks) -> {
-            var forksList = forks.getItems();
+        hubConnection.on("Send", (input) -> {
+            var forksList = input.getItems();
 
             if (forksList.size() > 0){
-                forksList.forEach(fork ->
-                        log.info("Fork: " + fork));
+                var forks = forksList.stream()
+                        .peek(fork -> {
+                            fork.setId(fork.hashCodeString());
+                            log.info("Fork: " + fork);
+                        })
+                        .collect(Collectors.toList());
 
-                Token token = forksList.get(0).getToken();
+                Token token = forks.get(0).getToken();
                 var existsForksHashes = forkUpdateService.getTokenForksHashKeys(token);
 
                 if(existsForksHashes.size() > 0){
-                    var newForks = new ArrayList<Fork>();
-                    var forkUpdates = new ArrayList<Fork>();
-                    forksList.forEach(fork -> {
-                        if(existsForksHashes.contains(fork.hashCodeString())) {
-                            forkUpdates.add(fork);
-                        } else {
-                            newForks.add(fork);
-                        }
-                    });
+                    var forkUpdates = forks.stream()
+                            .filter(fork -> existsForksHashes.contains(fork.getId()))
+                            .collect(Collectors.toList());
 
                     forkUpdates.forEach(
                             f -> log.info("Update fork: " + f));
 
-                    newForks.addAll(forkUpdates);
-                    forkUpdateService.saveForkHashes(token, newForks);
-                    forkService.save(newForks);
-
-                    simpMessagingTemplate.convertAndSend("/forks/update/", forksList);
+                    simpMessagingTemplate.convertAndSend("/forks/update/", forkUpdates);
                 } else {
-                    forkUpdateService.saveForkHashes(token, forksList);
-                    forkService.save(forksList);
-
-                    simpMessagingTemplate.convertAndSend("/forks/new/", forksList);
+                    simpMessagingTemplate.convertAndSend("/forks/new/", forks);
                 }
+
+                forkUpdateService.saveForkHashes(token, forksList);
+                forkService.save(forksList);
             }
         }, ForkList.class);
 

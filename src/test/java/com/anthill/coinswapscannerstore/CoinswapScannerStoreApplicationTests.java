@@ -32,6 +32,7 @@ class CoinswapScannerStoreApplicationTests {
 		var quote = new Quote(new UsdPrice(BigDecimal.ONE, BigDecimal.ONE, new Date()));
 		var forks = Collections.singletonList(
 				new Fork(
+						"122",
 						new Token(1, "Some token", "some-token", "STK",
 								new Platform(1, 1, "Binance"),
 								quote),
@@ -54,8 +55,11 @@ class CoinswapScannerStoreApplicationTests {
 
 	@Test
 	void getHashFromForkShouldBeEqual(){
+		var hashcode = -1915050797;
+
 		var quote1 = new Quote(new UsdPrice(BigDecimal.ONE, BigDecimal.ONE, new Date()));
 		var fork1 = new Fork(
+				"122",
 				new Token(1, "Some token", "some-token", "STK",
 						new Platform(1, 1, "Pancake"),
 						quote1),
@@ -70,6 +74,7 @@ class CoinswapScannerStoreApplicationTests {
 
 		var quote2 = new Quote(new UsdPrice(BigDecimal.TEN, BigDecimal.TEN, new Date()));
 		var fork2 = new Fork(
+				"122",
 				new Token(2, "Some token22", "some-token11", "STKDD",
 						new Platform(11, 12, "Pancake"),
 						quote2),
@@ -85,7 +90,7 @@ class CoinswapScannerStoreApplicationTests {
 		var hashcode1 = fork1.hashCode();
 		var hashcode2 = fork2.hashCode();
 
-		assert hashcode1 == hashcode2;
+		assert hashcode1 == hashcode2 && hashcode1 == hashcode;
 	}
 
 	@Test
