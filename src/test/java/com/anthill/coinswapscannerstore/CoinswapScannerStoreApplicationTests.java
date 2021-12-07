@@ -55,6 +55,8 @@ class CoinswapScannerStoreApplicationTests {
 
 	@Test
 	void getHashFromForkShouldBeEqual(){
+		var hashcode = -1915050797;
+
 		var quote1 = new Quote(new UsdPrice(BigDecimal.ONE, BigDecimal.ONE, new Date()));
 		var fork1 = new Fork(
 				"122",
@@ -88,7 +90,7 @@ class CoinswapScannerStoreApplicationTests {
 		var hashcode1 = fork1.hashCode();
 		var hashcode2 = fork2.hashCode();
 
-		assert hashcode1 == hashcode2;
+		assert hashcode1 == hashcode2 && hashcode1 == hashcode;
 	}
 
 	@Test
