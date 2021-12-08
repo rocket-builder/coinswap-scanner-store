@@ -47,7 +47,7 @@ class CoinswapScannerStoreApplicationTests {
 		forkService.save(forks);
 
 		//Assert
-		assert forkService.findAll().iterator().hasNext();
+		assert forkService.findAll().size() > 0;
 	}
 
 	@Test

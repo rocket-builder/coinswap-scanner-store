@@ -23,7 +23,7 @@ public class ForkUpdateService {
 
     public void saveForkHashes(Token token, Map<String, Object> forks) {
         Map<String, Object> updatesMap =
-                Map.of(token.getTitle(), forks.keySet());
+                Map.of(token.getTitle(), forks.keySet().toArray());
 
         redis.hSetAll(updatesKey, updatesMap);
         redis.resetExpiration(updatesKey, Global.FORK_TTL);

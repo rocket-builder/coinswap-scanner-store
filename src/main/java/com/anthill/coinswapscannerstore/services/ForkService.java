@@ -20,13 +20,8 @@ public class ForkService {
         redis.resetExpiration(forkKey, Global.FORK_TTL);
     }
 
-    public Iterable<Fork> findAll(){
-        return redis.hGetAll(forkKey)
-                .values()
-                .stream()
-                .filter(o -> o instanceof Fork)
-                .map(f -> (Fork) f)
-                .collect(Collectors.toList());
+    public Map<Object, Object> findAll(){
+        return redis.hGetAll(forkKey);
     }
 
     public void deleteAll(){
