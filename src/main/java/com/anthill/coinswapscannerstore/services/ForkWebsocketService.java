@@ -9,6 +9,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -47,23 +48,28 @@ public class ForkWebsocketService {
                         .collect(Collectors.toMap(Fork::hashCodeString, Function.identity()));
 
                 var existsForksHashes = forkUpdateService.getTokenForksHashKeys(token);
+                Map<String, Object> forkUpdates = new HashMap<>();
 
                 if(existsForksHashes.size() > 0){
-                    var forkUpdates = forks.entrySet()
+                    forkUpdates = forks.entrySet()
                             .stream()
                             .filter(fork -> existsForksHashes.contains(fork.getKey()))
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                }
+                if(forkUpdates.size() > 0){
                     log.info("Received " + forkUpdates.size() + " updates");
 
                     simpMessagingTemplate.convertAndSend("/forks/update/", forkUpdates);
-                } else {
-                    log.info("Received " + forksList.size() + " forks");
+                }
+                forkUpdateService.saveForkHashes(token, forks);
+                forkService.save(forks);
+
+                forks.keySet().removeAll(forkUpdates.keySet());
+                if(forks.size() > 0){
+                    log.info("Received " + forks.size() + " new forks");
 
                     simpMessagingTemplate.convertAndSend("/forks/new/", forks);
                 }
-
-                forkUpdateService.saveForkHashes(token, forks);
-                forkService.save(forks);
             }
         }, ForkList.class);
 
