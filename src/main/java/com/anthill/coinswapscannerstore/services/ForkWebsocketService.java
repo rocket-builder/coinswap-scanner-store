@@ -9,8 +9,10 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -39,31 +41,29 @@ public class ForkWebsocketService {
             var forksList = input.getItems();
 
             if (forksList.size() > 0){
-                var forks = forksList.stream()
-                        .peek(fork -> {
-                            fork.setId(fork.hashCodeString());
-                            log.info("Fork: " + fork);
-                        })
-                        .collect(Collectors.toList());
+                Token token = forksList.get(0).getToken();
 
-                Token token = forks.get(0).getToken();
+                Map<String, Object> forks = forksList.stream()
+                        .collect(Collectors.toMap(Fork::hashCodeString, Function.identity()));
+
                 var existsForksHashes = forkUpdateService.getTokenForksHashKeys(token);
 
                 if(existsForksHashes.size() > 0){
-                    var forkUpdates = forks.stream()
-                            .filter(fork -> existsForksHashes.contains(fork.getId()))
-                            .collect(Collectors.toList());
-
-                    forkUpdates.forEach(
-                            f -> log.info("Update fork: " + f));
+                    var forkUpdates = forks.entrySet()
+                            .stream()
+                            .filter(fork -> existsForksHashes.contains(fork.getKey()))
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    log.info("Received " + forkUpdates.size() + " updates");
 
                     simpMessagingTemplate.convertAndSend("/forks/update/", forkUpdates);
                 } else {
+                    log.info("Received " + forksList.size() + " forks");
+
                     simpMessagingTemplate.convertAndSend("/forks/new/", forks);
                 }
 
-                forkUpdateService.saveForkHashes(token, forksList);
-                forkService.save(forksList);
+                forkUpdateService.saveForkHashes(token, forks);
+                forkService.save(forks);
             }
         }, ForkList.class);
 

@@ -4,7 +4,6 @@ import com.anthill.coinswapscannerstore.beans.Fork;
 import com.anthill.coinswapscannerstore.constants.Global;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -16,13 +15,8 @@ public class ForkService {
     public ForkService(RedisService redis) {
         this.redis = redis;
     }
-
-    public void save(List<Fork> forks){
-        Map<String, Object> forksMap = forks.stream()
-                .collect(Collectors.toMap(
-                        Fork::hashCodeString, fork -> fork));
-
-        redis.hSetAll(forkKey, forksMap);
+    public void save(Map<String, Object> forks){
+        redis.hSetAll(forkKey, forks);
         redis.resetExpiration(forkKey, Global.FORK_TTL);
     }
 

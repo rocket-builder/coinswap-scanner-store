@@ -21,9 +21,9 @@ public class ForkUpdateService {
         this.redis = redis;
     }
 
-    public void saveForkHashes(Token token, List<Fork> forks) {
+    public void saveForkHashes(Token token, Map<String, Object> forks) {
         Map<String, Object> updatesMap =
-                Map.of(token.getTitle(), forks.stream().map(Fork::hashCodeString).toArray());
+                Map.of(token.getTitle(), forks.keySet());
 
         redis.hSetAll(updatesKey, updatesMap);
         redis.resetExpiration(updatesKey, Global.FORK_TTL);
