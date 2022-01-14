@@ -32,13 +32,13 @@ class CoinswapScannerStoreApplicationTests {
 				new Token(1, "Some token", "some-token", "STK",
 						new Platform(1, 1, "Binance"),
 						quote),
-				new Pair("STK/USDT", "some url",
-						new Exchange(0, "Binance", quote),
-						new Date(), BigDecimal.ONE, BigDecimal.ONE),
-				new Pair("STK/USDT","some url",
+				new Pair("STK/USDT", "https://coinmarketcap.com/currencies/tezos/markets/",
+						new Exchange(0, "Hotbit", quote),
+						new Date(), BigDecimal.TEN, BigDecimal.ONE),
+				new Pair("STK/ETH","https://coinmarketcap.com/currencies/tezos/markets/",
 						new Exchange(0, "PancakeSwap", quote),
-						new Date(), BigDecimal.ONE, BigDecimal.ONE),
-				BigDecimal.TEN,"some url", new Date()
+						new Date(), new BigDecimal(21), new BigDecimal(123)),
+				BigDecimal.TEN,"https://coinmarketcap.com/currencies/tezos/markets/", new Date()
 		);
 		var forks = new HashMap<String, Object>();
 		forks.put(fork.hashCodeString(), fork);
@@ -100,12 +100,26 @@ class CoinswapScannerStoreApplicationTests {
 
 	@Test
 	void countAllRealForks(){
-		var forkCount = redis.hGetAll("ForkUpdate").values()
+		var hashForkCount = redis.hGetAll("ForkUpdate").values()
 				.stream()
 				.map(a -> (Object[])a)
 				.flatMap(Stream::of)
 				.count();
+		var forkCount = redis.hGetAll("Fork").size();
 
-		assert forkCount > 0;
+		assert hashForkCount == forkCount;
+	}
+
+	@Test
+	void getAllUnhashedForks(){
+		var hashes = redis.hGetAll("ForkUpdate").values()
+				.stream()
+				.map(a -> (Object[])a)
+				.flatMap(Stream::of)
+				.collect(Collectors.toList());
+		var forks = redis.hGetAll("Fork").entrySet();
+		forks.removeIf(e -> hashes.contains(e.getKey()));
+
+		assert forks.size() == 0;
 	}
 }
